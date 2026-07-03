@@ -1,0 +1,141 @@
+{
+  "benchmark_date": "2026-07-01 08:12:28",
+  "dataset": "CHB-MIT (chb01 + chb03)",
+  "sfreq": 256.0,
+  "n_real_interictal": 2490,
+  "n_real_ictal": 30,
+  "generators": {
+    "VAE": {
+      "metrics": {
+        "spectral_fidelity": {
+          "delta": 2.728695683534548e-10,
+          "theta": 4.153381485782537e-11,
+          "alpha": 1.058765343237263e-11,
+          "beta": 5.330386840794719e-12,
+          "gamma": 4.986188562726993e-12
+        },
+        "spectral_fidelity_mean": 6.706152240943491e-11,
+        "pac": {
+          "real_mean_mi": 0.0005695830596487373,
+          "synthetic_mean_mi": 0.0004073026355692944,
+          "absolute_difference": 0.00016228042407944284
+        },
+        "subject_fingerprint": {
+          "mean_accuracy": 0.9666666666666666,
+          "std_accuracy": 0.04082482904638632
+        },
+        "cross_session_stability": {
+          "within_subject_distance": 5.084310019181299e-10,
+          "between_subject_distance": 1.8369017942300466e-09,
+          "stability_ratio": 3.612883139108488
+        }
+      },
+      "safety": {
+        "real_only": {
+          "accuracy": 0.9615384615384616,
+          "f1_score": 0.9090909090909091,
+          "false_positive_rate": 0.0
+        },
+        "synthetic_only": {
+          "accuracy": 0.7692307692307693,
+          "f1_score": 0.0,
+          "false_positive_rate": 0.0
+        },
+        "mixed": {
+          "accuracy": 0.9230769230769231,
+          "f1_score": 0.8333333333333334,
+          "false_positive_rate": 0.05
+        },
+        "certified_safe": false
+      }
+    },
+    "GAN": {
+      "metrics": {
+        "spectral_fidelity": {
+          "delta": 2.553218827940646e-10,
+          "theta": 3.6756153277854356e-11,
+          "alpha": 7.462583934342493e-12,
+          "beta": 2.880917670838084e-12,
+          "gamma": 3.9555752834548676e-12
+        },
+        "spectral_fidelity_mean": 6.127542259211088e-11,
+        "pac": {
+          "real_mean_mi": 0.0005695830596487373,
+          "synthetic_mean_mi": 0.0006657457011302252,
+          "absolute_difference": 9.616264148148794e-05
+        },
+        "subject_fingerprint": {
+          "mean_accuracy": 1.0,
+          "std_accuracy": 0.0
+        },
+        "cross_session_stability": {
+          "within_subject_distance": 5.122798485203434e-10,
+          "between_subject_distance": 1.731099165023485e-09,
+          "stability_ratio": 3.3792060531437054
+        }
+      },
+      "safety": {
+        "real_only": {
+          "accuracy": 0.9615384615384616,
+          "f1_score": 0.9090909090909091,
+          "false_positive_rate": 0.0
+        },
+        "synthetic_only": {
+          "accuracy": 0.7692307692307693,
+          "f1_score": 0.0,
+          "false_positive_rate": 0.0
+        },
+        "mixed": {
+          "accuracy": 0.9230769230769231,
+          "f1_score": 0.8333333333333334,
+          "false_positive_rate": 0.05
+        },
+        "certified_safe": false
+      }
+    },
+    "Diffusion": {
+      "metrics": {
+        "spectral_fidelity": {
+          "delta": 2.094243903804192e-10,
+          "theta": 4.56736058999566e-11,
+          "alpha": 6.697937845712968e-11,
+          "beta": 7.250967439696227e-11,
+          "gamma": 7.340364170140298e-11
+        },
+        "spectral_fidelity_mean": 9.359813816717414e-11,
+        "pac": {
+          "real_mean_mi": 0.0005695830596487373,
+          "synthetic_mean_mi": 0.0005573345607945939,
+          "absolute_difference": 1.22484988541434e-05
+        },
+        "subject_fingerprint": {
+          "mean_accuracy": 0.9833333333333332,
+          "std_accuracy": 0.03333333333333335
+        },
+        "cross_session_stability": {
+          "within_subject_distance": 5.2950637471544e-10,
+          "between_subject_distance": 1.59793106211749e-09,
+          "stability_ratio": 3.0177749285383544
+        }
+      },
+      "safety": {
+        "real_only": {
+          "accuracy": 0.9615384615384616,
+          "f1_score": 0.9090909090909091,
+          "false_positive_rate": 0.0
+        },
+        "synthetic_only": {
+          "accuracy": 0.7692307692307693,
+          "f1_score": 0.0,
+          "false_positive_rate": 0.0
+        },
+        "mixed": {
+          "accuracy": 0.9230769230769231,
+          "f1_score": 0.8333333333333334,
+          "false_positive_rate": 0.05
+        },
+        "certified_safe": false
+      }
+    }
+  }
+}

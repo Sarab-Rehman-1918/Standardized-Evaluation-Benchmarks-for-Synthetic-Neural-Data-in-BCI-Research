@@ -1,0 +1,9 @@
+# requirements.txt
+
+numpy
+scipy
+scikit-learn
+mne
+matplotlib
+pandas
+pyyaml
