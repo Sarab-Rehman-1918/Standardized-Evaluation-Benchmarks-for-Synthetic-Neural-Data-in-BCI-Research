@@ -4,23 +4,23 @@
 
 ---
 
-## What Is This Project? (Simple Explanation in Urdu)
+## What Is This Project?
 
-**Problem kya tha?**
-Aaj kal AI se fake/synthetic EEG data banaya ja sakta hai. EEG woh signal hota hai jo brain se aata hai — jaise seizure detect karna ya koi aur brain condition. Lekin problem yeh thi ke jab log check karte the ke yeh fake EEG achha hai ya nahi, toh woh computer vision ke tools use karte the — jo actually images ke liye bane hain, EEG ke liye nahi. Iska matlab tha ke ek fake EEG "achha" lag sakta tha lekin actually usme brain ki asli properties nahi hoti thin — aur agar aisa data hospital mein use ho jata toh galat diagnosis ho sakti thi, jo patient ke liye khatra tha.
+**The Problem:**
+Artificial Intelligence can now generate fake/synthetic EEG data. EEG (Electroencephalogram) is the electrical signal recorded from the brain — used to detect seizures and other brain conditions. The problem was that when researchers checked whether their fake EEG was good or not, they used tools borrowed from computer vision (originally designed for images). This was wrong because a fake EEG signal could score well on those image-based tools while completely missing fundamental brain properties — and if such data was used to train clinical models, it could cause dangerous misdiagnoses in real patients.
 
-**Is project ne kya solve kiya?**
-Humne ek aisa system banaya jo fake EEG ko properly check karta hai — brain science ke hisaab se, na computer vision ke hisaab se.
+**What This Project Solves:**
+This project builds a standardized benchmarking suite that evaluates synthetic EEG quality using brain science rules — not image processing rules. It lets researchers know whether their synthetic EEG is genuinely safe and useful, or just statistically plausible but clinically harmful.
 
-**Kaise kaam karta hai?**
-- Asli brain recordings (CHB-MIT dataset) load karta hai
-- 3 AI models (VAE, GAN, Diffusion) se fake EEG banata hai
-- 4 brain-science metrics se fake EEG ko check karta hai
-- Safety test karta hai ke yeh fake data clinic mein safe hai ya nahi
-- Sab results ek leaderboard mein dikhata hai
+**How It Works — Step by Step:**
+1. Loads real brain recordings from the CHB-MIT epilepsy dataset
+2. Trains three AI generators (VAE, GAN, Diffusion) to produce fake EEG
+3. Evaluates the fake EEG using four neurophysiology-based metrics
+4. Runs a clinical safety test to check if the fake data is safe for medical use
+5. Produces a leaderboard report and interactive dashboard showing all results
 
-**Summary ek line mein:**
-Humne ek aisa system banaya jo AI se bani fake brain signals ko brain science ke proper rules se check karta hai — taake doctors aur researchers ko pata chale ke yeh fake data clinic mein safely use ho sakta hai ya nahi.
+**One Line Summary:**
+We built a system that checks AI-generated brain signals against real brain science rules — so doctors and researchers can know whether synthetic EEG data is safe to use in clinical settings.
 
 ---
 
@@ -106,28 +106,26 @@ Standardized-Evaluation-Benchmarks-for-Synthetic-Neural-Data-in-BCI-Research/
 ## Metrics Implemented
 
 ### 1. Spectral Fidelity (`metrics/spectral_fidelity.py`)
-Compares power spectral density (PSD) distributions across standard EEG frequency bands between real and synthetic data using Wasserstein distance.
+Checks whether the power of brain waves in each frequency band matches between real and synthetic EEG. Uses Wasserstein distance to compare distributions.
 
 Bands evaluated: Delta (0.5-4 Hz), Theta (4-8 Hz), Alpha (8-13 Hz), Beta (13-30 Hz), Gamma (30-45 Hz)
 
-Lower score = synthetic data closer to real EEG spectral distribution.
+Lower score = synthetic data closer to real EEG. Think of it like checking whether a music copy has the same bass and treble as the original.
 
 ### 2. Phase-Amplitude Coupling (`metrics/phase_amplitude_coupling.py`)
-Measures how well synthetic EEG preserves the coupling between low-frequency phase (theta) and high-frequency amplitude (gamma) — a fundamental neurophysiological property of real brain signals.
+Real brains have a special property where slow waves and fast waves synchronize with each other. This metric checks whether synthetic EEG preserves this synchronization. Uses the Modulation Index (MI) method from Tort et al. (2010).
 
-Uses Modulation Index (MI) based on Tort et al. (2010).
-
-Lower absolute difference = better PAC preservation.
+Lower absolute difference = better coupling preservation. Synthetic EEG that fails this test contains hallucinated patterns that do not exist in real brains.
 
 ### 3. Subject Fingerprint Retention (`metrics/subject_fingerprint.py`)
-Tests whether synthetic data preserves subject-specific neural signatures using a band-power feature classifier.
+Every person's EEG is slightly unique — like a fingerprint. This metric checks whether synthetic data preserves the individual characteristics of the subject it was generated from, using a band-power feature classifier.
 
-Lower classification accuracy = synthetic data is less distinguishable from real (better generalization).
+Lower classification accuracy = synthetic data is harder to distinguish from real data (better). Higher accuracy means the synthetic data looks too different from real data.
 
 ### 4. Cross-Session Stability (`metrics/cross_session_stability.py`)
-Measures within-subject vs between-subject variability across sessions.
+A person's EEG should remain somewhat consistent across different recording sessions, while still being different from other people's EEG. This metric checks whether synthetic data preserves that stability.
 
-Stability ratio > 1 = subject is more consistent within itself than vs other subjects (physiologically expected).
+Stability ratio > 1 means within-subject sessions are more similar to each other than to other subjects — which is the correct physiological behavior.
 
 ---
 
@@ -135,9 +133,9 @@ Stability ratio > 1 = subject is more consistent within itself than vs other sub
 
 | Model | File | Description |
 |-------|------|-------------|
-| VAE | `generators/vae_baseline.py` | Variational Autoencoder — compresses real EEG into latent space then generates new samples |
-| GAN | `generators/gan_baseline.py` | Generative Adversarial Network — generator and discriminator trained adversarially |
-| Diffusion | `generators/diffusion_baseline.py` | DDPM — learns to reverse a gradual noising process to generate realistic EEG |
+| VAE | `generators/vae_baseline.py` | Variational Autoencoder — compresses real EEG into a small latent space, then samples from it to generate new fake EEG |
+| GAN | `generators/gan_baseline.py` | Generative Adversarial Network — a generator and discriminator trained against each other until the generator fools the discriminator |
+| Diffusion | `generators/diffusion_baseline.py` | Denoising Diffusion Probabilistic Model — gradually adds noise to real EEG, then learns to reverse that process to generate realistic EEG from pure noise |
 
 ---
 
@@ -147,13 +145,13 @@ Stability ratio > 1 = subject is more consistent within itself than vs other sub
 - Subjects: chb01, chb03 (two distinct pediatric patients)
 - Sampling rate: 256 Hz
 - Channels: 23 (standard 10-20 montage)
-- Segment length: 10 seconds
-- Labels: ictal (seizure) and interictal (non-seizure)
+- Segment length: 10 seconds per segment
+- Labels: ictal (during seizure) and interictal (seizure-free baseline)
 - Total segments: 2,520 (30 ictal, 2,490 interictal)
 
 Download: https://physionet.org/content/chbmit/1.0.0/
 
-Place data in:
+Place downloaded files in:
 ```
 data/raw/epilepsy/chb_mit/chb01/
 data/raw/epilepsy/chb_mit/chb03/
@@ -163,18 +161,23 @@ data/raw/epilepsy/chb_mit/chb03/
 
 ## Safety Protocol
 
-Trains a downstream pathology detection classifier (Random Forest) under three conditions:
+Trains a downstream seizure detection classifier (Random Forest) under three different training conditions and evaluates all three on real held-out test data:
 
-| Condition | Description |
-|-----------|-------------|
-| Real only | Trained on real EEG only — gold standard baseline |
-| Synthetic only | Trained on synthetic EEG only — tests clinical risk |
-| Mixed | Trained on real + synthetic — tests augmentation safety |
+| Condition | Description | Purpose |
+|-----------|-------------|---------|
+| Real only | Trained on real EEG only | Gold standard baseline |
+| Synthetic only | Trained on synthetic EEG only | Tests clinical risk of replacing real data |
+| Mixed | Trained on real + synthetic combined | Tests data augmentation scenario |
 
-**Safety thresholds for certification:**
-- Accuracy >= 0.75
-- F1 Score >= 0.70
-- False Positive Rate <= 0.20
+**Safety thresholds for clinical certification:**
+
+| Metric | Threshold |
+|--------|-----------|
+| Accuracy | >= 0.75 |
+| F1 Score | >= 0.70 |
+| False Positive Rate | <= 0.20 |
+
+A generator is marked CERTIFIED SAFE only if its synthetic-only trained classifier passes all three thresholds simultaneously.
 
 ---
 
@@ -206,32 +209,29 @@ pip install -r requirements.txt
 ```bash
 python "src/synth_eeg_bench/leaderboard/run_benchmark.py"
 ```
+This trains all three generators on real CHB-MIT data, runs all four metrics, runs the safety protocol, and saves results to `data/results/benchmark_results.json`.
 
 ### Step 2 — Generate the leaderboard report
 ```bash
 python "src/synth_eeg_bench/leaderboard/generate_report.py"
 ```
+Prints a formatted leaderboard table to the terminal and saves a markdown report to `data/results/leaderboard_report.md`.
 
 ### Step 3 — Launch the interactive dashboard
 ```bash
 streamlit run web/dashboard.py
 ```
+Opens an interactive web dashboard at `http://localhost:8501` showing all benchmark results as charts and tables.
 
-Opens at `http://localhost:8501` in your browser automatically.
-
-Results are saved to:
-- `data/results/benchmark_results.json`
-- `data/results/leaderboard_report.md`
-
-### Run individual modules
+### Run individual validation scripts
 ```bash
-# Test spectral fidelity on real data
+# Test spectral fidelity on real CHB-MIT data
 python "scripts/test_spectral_fidelity_real_data.py"
 
-# Test PAC on real data
+# Test PAC on real CHB-MIT data
 python "scripts/test_pac_real_data.py"
 
-# Test subject fingerprinting on real data
+# Test subject fingerprinting on real CHB-MIT data
 python "scripts/test_subject_fingerprint_real_data.py"
 
 # Run safety evaluation only
@@ -240,13 +240,21 @@ python "src/synth_eeg_bench/safety_protocol/evaluate_safety.py"
 
 ---
 
-## Dashboard
+## Interactive Dashboard
 
-The interactive Streamlit dashboard (`web/dashboard.py`) visualizes all benchmark results with charts and tables. It reads from `data/results/benchmark_results.json` — so results update only when you rerun `run_benchmark.py`.
+The Streamlit dashboard (`web/dashboard.py`) provides an interactive visual interface for exploring benchmark results. It includes:
 
-**Note:** The dashboard never reruns the benchmark itself. To get fresh results:
-1. Run `run_benchmark.py` first
-2. Then refresh the dashboard in your browser
+- Dataset overview metrics
+- Spectral fidelity bar charts per frequency band
+- PAC comparison charts (real vs synthetic modulation index)
+- Subject fingerprint accuracy with error bars
+- Cross-session stability ratio charts
+- Safety protocol results across all three training conditions
+- Final ranked leaderboard with medals
+
+**Important:** The dashboard only reads `data/results/benchmark_results.json` — it does not rerun the benchmark itself. To get updated results:
+1. Run `run_benchmark.py` first to generate new results
+2. Refresh the browser page — the dashboard will automatically show the latest data
 
 ---
 
@@ -265,7 +273,7 @@ streamlit
 plotly
 ```
 
-Install with:
+Install all dependencies with:
 ```bash
 pip install -r requirements.txt
 ```
@@ -280,23 +288,27 @@ pip install -r requirements.txt
 | #2 | GAN | 0.000096 | No |
 | #3 | VAE | 0.000162 | No |
 
-> Note: Safety certification requires the synthetic_only classifier to meet
-> all three clinical thresholds simultaneously. Current generators only
-> synthesize interictal segments — adding ictal synthesis is a planned
-> future improvement.
+The Diffusion model ranked first with the smallest PAC difference — meaning its synthetic EEG most closely preserved the phase-amplitude coupling structure of real brain signals.
+
+**Why are none certified safe?**
+All three generators were trained only on interictal (non-seizure) data, so they can only generate interictal synthetic segments. A classifier trained on synthetic-only data never sees any seizure examples and therefore cannot detect seizures — causing F1 score to be 0. Adding ictal synthesis capability to the generators is the primary planned improvement.
 
 ---
 
-## How Results Change
+## How Results Change Between Runs
 
-Results vary between benchmark runs due to:
-- Random weight initialization in VAE, GAN, and Diffusion training
-- Random subsampling of training data
-- Random latent vector sampling during generation
+Results vary slightly between benchmark runs due to:
+- Random weight initialization in VAE, GAN, and Diffusion model training
+- Random subsampling when selecting training segments
+- Random latent vector sampling during synthetic data generation
 
-To make results fully reproducible, add these seeds at the top of `run_benchmark.py`:
+To make results fully reproducible (same output every run), add these lines at the top of `run_benchmark.py` after the imports:
+
 ```python
-import random, numpy as np, torch
+import random
+import numpy as np
+import torch
+
 random.seed(42)
 np.random.seed(42)
 torch.manual_seed(42)
@@ -310,11 +322,13 @@ Han, S., Feng, S., & Li, F. (2026). Advancing brain-computer interfaces with
 generative AI: A review of state-of-the-art and future outlook.
 *The Innovation Life*, 4(1).
 
-Goldberger, A., et al. (2000). PhysioBank, PhysioToolkit, and PhysioNet.
+Goldberger, A., et al. (2000). PhysioBank, PhysioToolkit, and PhysioNet:
+Components of a new research resource for complex physiologic signals.
 *Circulation*, 101(23).
 
-Tort, A. B., et al. (2010). Measuring phase-amplitude coupling between neuronal
-oscillations of different frequencies. *Journal of Neurophysiology*, 104(2).
+Tort, A. B., Komorowski, R., Eichenbaum, H., & Kopell, N. (2010).
+Measuring phase-amplitude coupling between neuronal oscillations of
+different frequencies. *Journal of Neurophysiology*, 104(2), 1195-1210.
 
 ---
 
